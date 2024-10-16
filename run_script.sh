@@ -1,29 +1,23 @@
 #!/bin/bash
 
-# Ask for first confirmation
-read -p "Do you want to continue using the script? (y/n) => " first_confirm
-if [[ "$first_confirm" != "y" ]]; then
-  echo "Exiting script..."
-  exit 1
-fi
+# Download the Python script from the provided link
+wget -O pairip.py https://pixeldrain.com/api/file/1CrGiM6H
+
+# Automating first confirmation as 'yes'
+echo "Do you want to continue using the script? (y/n) => y"
 
 # Check the file type
-read -p "Enter the file name (with extension): " filename
+filename=$1  # The filename will be passed as an argument
 
-# Ask for second confirmation only if it's a split APK file type
+# Automating second confirmation depending on the file type
 if [[ "$filename" == *.apks || "$filename" == *.xapk || "$filename" == *.apkm ]]; then
-  read -p "Would you like to merge? (y/n) => " second_confirm
-  if [[ "$second_confirm" != "y" ]]; then
-    echo "Exiting script..."
-    exit 1
-  fi
+  echo "Would you like to merge? (y/n) => y"
+else
+  echo "Would you like to merge? (y/n) => (skipped)"
 fi
 
-# Ask for third confirmation
-read -p "Want to join channel (Press Enter to skip) (y/n) => " third_confirm
-if [[ "$third_confirm" == "n" ]]; then
-  echo "You chose not to join the channel."
-fi
+# Automating third confirmation as 'no'
+echo "Want to join channel (Press Enter to skip) (y/n) => n"
 
-# Execute the Python script
+# Execute the downloaded Python script
 python3 pairip.py
