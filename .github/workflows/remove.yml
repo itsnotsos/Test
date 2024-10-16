@@ -18,7 +18,7 @@ jobs:
 
       - name: Download file
         run: |
-          wget -O user_file ${ { github.event.inputs.file_url } }
+          wget -O user_file "${{ github.event.inputs.file_url }}"
 
       - name: Make script executable
         run: chmod +x run_script.sh
