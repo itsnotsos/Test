@@ -16,15 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download file
+      - name: Download user file
         run: |
           wget -O user_file "${{ github.event.inputs.file_url }}"
 
-      - name: Make script executable
+      - name: Make shell script executable
         run: chmod +x run_script.sh
 
       - name: Run the shell script
-        run: ./run_script.sh
+        run: ./run_script.sh user_file
 
       - name: Create release
         id: create_release
