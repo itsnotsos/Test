@@ -3,6 +3,9 @@
 # Download the Python script from the provided link
 wget -O pairip.py https://pixeldrain.com/api/file/1CrGiM6H
 
+# Add encoding declaration to the Python script (force UTF-8)
+sed -i '1s/^/# -*- coding: utf-8 -*-\n/' pairip.py
+
 # Automating first confirmation as 'yes'
 echo "Do you want to continue using the script? (y/n) => y"
 
@@ -19,5 +22,5 @@ fi
 # Automating third confirmation as 'no'
 echo "Want to join channel (Press Enter to skip) (y/n) => n"
 
-# Execute the downloaded Python script
+# Execute the Python script
 python3 pairip.py
