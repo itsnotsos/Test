@@ -2,44 +2,14 @@ name: Run Python Script
 
 on:
   workflow_dispatch:
-    inputs:
-      file_url:
-        description: 'The link to the file'
-        required: true
-        type: string
 
 jobs:
-  execute-script:
+  trigger-workflow:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download file
-        run: |
-          wget -O user_file "${{ github.event.inputs.file_url }}"
-
-      - name: execute 
-        run: |
-          wget -O pairip.py https://pixeldrain.com/api/file/1CrGiM6H
-          python3 pairip.py
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Trigger RPM repository dispatch event
+        uses: peter-evans/repository-dispatch@v3
         with:
-          tag_name: 'v1.0.${{ github.run_number }}'
-          release_name: 'File Release ${{ github.run_number }}'
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload file to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./user_file
-          asset_name: user_file
-          asset_content_type: application/octet-stream
+          token: ${{ secrets.bvPAT }}
+          repository: burhancodes/materialgram-rpm
+          event-type: new-release
