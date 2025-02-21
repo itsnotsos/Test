@@ -1,0 +1,17 @@
+name: Run fagram updater
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger RPM repository dispatch event
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.bvPAT }}
+          repository: burhancodes/fagram-rpm
+          event-type: new-release
