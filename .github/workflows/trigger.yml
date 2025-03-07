@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TARBALL_PATH="artifacts_download/*/*.tar.gz"
+          TARBALL_PATH=$(find artifacts_download -name "*.tar.gz" -type f)
           RELEASE_TAG="prebuilt-tarball"
           
           if gh release view "$RELEASE_TAG" --repo ${{ github.repository }} > /dev/null 2>&1; then
