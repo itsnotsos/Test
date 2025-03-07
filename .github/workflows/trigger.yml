@@ -32,10 +32,14 @@ jobs:
             --limit 1 \
             --json databaseId \
             -q '.[0].databaseId')
+
+          echo "Downloading artifacts from run ID: $RUN_ID"
           
           gh run download $RUN_ID \
             --repo $SOURCE_REPO \
             --dir artifacts_download
+
+          ls -la artifacts_download/
           
           mkdir -p unzipped_files extracted_files
           unzip artifacts_download/*.zip -d unzipped_files
