@@ -1,0 +1,45 @@
+name: Artifacts Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download-artifacts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Target Repo
+        uses: actions/checkout@v4
+
+      - name: Setup GH CLI
+        run: |
+          sudo apt update
+          sudo apt install gh
+
+      - name: Authenticate GH CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Download and Extract Artifacts
+        env:
+          SOURCE_REPO: "FajoX1/fagramdesktop"
+          WORKFLOW_NAME: "linux"
+        run: |
+          RUN_ID=$(gh run list \
+            --repo $SOURCE_REPO \
+            --workflow $WORKFLOW_NAME \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            -q '.[0].databaseId')
+          
+          gh run download $RUN_ID \
+            --repo $SOURCE_REPO \
+            --dir artifacts_download
+          
+          mkdir -p unzipped_files extracted_files
+          unzip artifacts_download/*.zip -d unzipped_files
+          
+      - name: List Extracted Files
+        run: |
+          ls -la unzipped_files/
