@@ -39,11 +39,7 @@ jobs:
             --repo $SOURCE_REPO \
             --dir artifacts_download
 
-          ls -la artifacts_download/
-          
-          mkdir -p unzipped_files extracted_files
-          unzip artifacts_download/*.zip -d unzipped_files
-          
       - name: List Extracted Files
         run: |
-          ls -la unzipped_files/
+          ls -la artifacts_download/
+          ls -la artifacts_download/*/
