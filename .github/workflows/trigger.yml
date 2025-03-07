@@ -43,3 +43,22 @@ jobs:
         run: |
           ls -la artifacts_download/
           ls -la artifacts_download/*/
+
+      - name: Create Release with Tarball
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARBALL_PATH="artifacts_download/*/*.tar.gz"
+          RELEASE_TAG="prebuilt-tarball"
+          
+          if gh release view "$RELEASE_TAG" --repo ${{ github.repository }} > /dev/null 2>&1; then
+            echo "Deleting existing release with tag $RELEASE_TAG..."
+            gh release delete "$RELEASE_TAG" --repo ${{ github.repository }} --yes
+          fi
+          
+          echo "Creating new release with tag $RELEASE_TAG..."
+          gh release create "$RELEASE_TAG" \
+            "$TARBALL_PATH" \
+            --title "Prebuilt Tarball Release" \
+            --notes "Latest prebuilt tarball from FajoX1/fagramdesktop linux workflow" \
+            --repo ${{ github.repository }}
