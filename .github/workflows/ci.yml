@@ -1,41 +1,40 @@
-name: Install fagram-bin with yay
+name: Install fagram-bin
 
-on:
-  push:
+on: [push]
 
 jobs:
-  install:
+  manual-install:
     runs-on: ubuntu-latest
-    container:
-      image: archlinux:latest
+    container: archlinux/archlinux
     steps:
-      - name: Update system and install dependencies
-        run: |
-          pacman -Syu --noconfirm
-          pacman -S --needed base-devel git --noconfirm
-
-      - name: Create non-root user for building
+      - name: Update package database
+        run: pacman -Syu --noconfirm
+      - name: Install base-devel, git, and sudo
+        run: pacman -S --noconfirm base-devel git sudo
+      - name: Create builder user
         run: |
           useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
+      - name: Clone AUR repository as builder
+        run: su builder -c "git clone https://aur.archlinux.org/fagram-bin.git ~/fagram-bin"
+      - name: Build and install fagram-bin as builder
+        run: su builder -c "cd ~/fagram-bin && makepkg -si --noconfirm"
 
-      - name: Install yay (AUR helper)
+  yay-install:
+    runs-on: ubuntu-latest
+    container: archlinux/archlinux
+    steps:
+      - name: Update package database
+        run: pacman -Syu --noconfirm
+      - name: Install base-devel, git, and sudo
+        run: pacman -S --noconfirm base-devel git sudo
+      - name: Create builder user
         run: |
-          # Clone yay into builder's home directory and adjust permissions
-          git clone https://aur.archlinux.org/yay.git /home/builder/yay
-          chown -R builder:builder /home/builder/yay
-          cd /home/builder/yay
-          # Run makepkg as the non-root user
-          su builder -c 'makepkg -si --noconfirm'
-
-      - name: Install fagram-bin package
-        run: |
-          su builder -c 'yay -S fagram-bin --noconfirm'
-
-      - name: Echo job result
-        if: always()
-        run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "Installation succeeded"
-          else
-            echo "Installation failed"
-          fi
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: /usr/bin/pacman" >> /etc/sudoers
+      - name: Clone yay AUR repository as builder
+        run: su builder -c "git clone https://aur.archlinux.org/yay.git ~/yay"
+      - name: Build and install yay as builder
+        run: su builder -c "cd ~/yay && makepkg -si --noconfirm"
+      - name: Install fagram-bin using yay as builder
+        run: su builder -c "yay -S fagram-bin --noconfirm"
