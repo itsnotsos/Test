@@ -1,0 +1,15 @@
+name: Get pacman version hash
+
+on:
+  workflow_dispatch:
+
+jobs:
+  get_hash:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Run pacman command
+        run: |
+          output=$(pacman -V | sed -r 's#[0-9]+#c16#g' | md5sum | cut -c1-6)
+          echo "The output is: $output"
