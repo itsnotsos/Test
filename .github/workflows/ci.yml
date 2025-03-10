@@ -1,15 +1,34 @@
-name: Get pacman version hash
+name: Install fagram-bin with yay
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
-  get_hash:
+  install:
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
     steps:
-      - name: Run pacman command
+      - name: Update system and install dependencies
         run: |
-          output=$(pacman -V | sed -r 's#[0-9]+#c16#g' | md5sum | cut -c1-6)
-          echo "The output is: $output"
+          pacman -Syu --noconfirm
+          pacman -S --needed base-devel git --noconfirm
+
+      - name: Install yay (AUR helper)
+        run: |
+          git clone https://aur.archlinux.org/yay.git
+          cd yay
+          makepkg -si --noconfirm
+
+      - name: Install fagram-bin package
+        run: |
+          yay -S fagram-bin --noconfirm
+
+      - name: Echo job result
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "Installation succeeded"
+          else
+            echo "Installation failed"
+          fi
