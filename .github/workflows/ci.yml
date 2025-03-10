@@ -14,15 +14,22 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --needed base-devel git --noconfirm
 
+      - name: Create non-root user for building
+        run: |
+          useradd -m builder
+
       - name: Install yay (AUR helper)
         run: |
-          git clone https://aur.archlinux.org/yay.git
-          cd yay
-          makepkg -si --noconfirm
+          # Clone yay into builder's home directory and adjust permissions
+          git clone https://aur.archlinux.org/yay.git /home/builder/yay
+          chown -R builder:builder /home/builder/yay
+          cd /home/builder/yay
+          # Run makepkg as the non-root user
+          su builder -c 'makepkg -si --noconfirm'
 
       - name: Install fagram-bin package
         run: |
-          yay -S fagram-bin --noconfirm
+          su builder -c 'yay -S fagram-bin --noconfirm'
 
       - name: Echo job result
         if: always()
